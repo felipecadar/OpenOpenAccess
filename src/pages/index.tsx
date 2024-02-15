@@ -52,7 +52,7 @@ export default function Home() {
     // reset data to original data
     let filterData = ogdata;
 
-    const searchTerms = search.split(" ");
+    const searchTerms = search.trim().split(" ");
     searchTerms.forEach((term) => {
       if (term.toLowerCase().startsWith("t+")) {
         const searchTerm = term.replace("t+", "");
@@ -191,7 +191,8 @@ export default function Home() {
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
           {search.length > 0 && (
             <>
-              <p className="pt-4 ">{`Filtered ${data.length} out of ${ogdata.length} papers`}</p>
+
+              <p className="pt-4 ">{`Found ${data.length} out of ${ogdata.length} papers`}</p>
               {data.slice(0, 200).map((paper, index) => (
                 <div
                   key={index}
