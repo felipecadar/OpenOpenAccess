@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 type paper_type = {
   title: string;
-  authors: string;
+  authors: string[];
   abstract: string;
   arXiv: string | null | undefined;
   pdf: string | null | undefined;
@@ -79,7 +79,25 @@ export default function Home() {
         filterData = filterData.filter(
           (paper) => !paper.abstract.toLowerCase().includes(searchTerm),
         );
-      } 
+      } else if (term.toLowerCase().includes("au+")) {
+        const searchTerm = term.replace("au+", "");
+        filterData = filterData.filter((paper) =>
+          paper.authors.join(", ").toLowerCase().includes(searchTerm),
+        );
+      }
+      else if (term.toLowerCase().includes("au-")) {
+        const searchTerm = term.replace("au-", "");
+        filterData = filterData.filter(
+          (paper) => !paper.authors.join(", ").toLowerCase().includes(searchTerm),
+        );
+      }
+      else {
+        filterData = filterData.filter((paper) =>
+          paper.title.toLowerCase().includes(term) ||
+          paper.authors.join(", ").toLowerCase().includes(term) ||
+          paper.abstract.toLowerCase().includes(term),
+        );
+      }
     });
     setData(filterData);
   }
@@ -115,6 +133,12 @@ export default function Home() {
               <p className="">
                 Use a- to search for the abstract excluding the search term
               </p>
+              <p className="">
+                Use au+ to search for the authors including the search term
+              </p>
+              <p className="">
+                Use au- to search for the authors excluding the search term
+              </p>
               <p className="">Separate all terms by space</p>
             </>
           )}
@@ -139,41 +163,47 @@ export default function Home() {
         </div>
 
         {/* found X out of Y.... */}
-        <p className="pt-4 ">{`Found ${data.length} out of ${ogdata.length} papers`}</p>
 
         {/* make a nice list of papers */}
 
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-          {data.slice(0, 100).map((paper, index) => (
-            <div
-              key={index}
-              className="flex flex-col items-center justify-center gap-4 border-2 border-slate-300 rounded-2xl p-10 "
-            >
-              <h1 className="text-3xl font-bold ">{paper.title}</h1>
-              <p className="">{paper.authors}</p>
-              <p className="">{paper.abstract}</p>
-              <div className="flex flex-row gap-4">
-                {paper.arXiv && (
-                  // make a nice arXiv button
-                  <Link href={paper.arXiv}>
-                    <button className="rounded-md bg-blue-100 px-4 py-2 text-black">
-                      arXiv
-                    </button>
-                  </Link>
-                )}
+          {search.length > 0  && (
+            <>
+            <p className="pt-4 ">{`Filtered ${data.length} out of ${ogdata.length} papers`}</p>
+            {data.slice(0, 100).map((paper, index) => (
+              <div
+                key={index}
+                className="flex flex-col items-center justify-center gap-4 border-2 border-slate-300 rounded-2xl p-10 "
+              >
+                <h1 className="text-3xl font-bold ">{paper.title}</h1>
+                <p className="">
+                  {paper.authors.join(", ")}
+                </p>
+                <p className="">{paper.abstract}</p>
+                <div className="flex flex-row gap-4">
+                  {paper.arXiv && (
+                    // make a nice arXiv button
+                    <Link href={paper.arXiv}>
+                      <button className="rounded-md bg-blue-100 px-4 py-2 text-black">
+                        arXiv
+                      </button>
+                    </Link>
+                  )}
 
-                {paper.pdf && (
-                  // make a nice pdf button
-                  <Link href={paper.pdf}>
-                    <button className="rounded-md bg-blue-100 px-4 py-2 text-black">
-                      PDF
-                    </button>
-                  </Link>
-                )}
+                  {paper.pdf && (
+                    // make a nice pdf button
+                    <Link href={paper.pdf}>
+                      <button className="rounded-md bg-blue-100 px-4 py-2 text-black">
+                        PDF
+                      </button>
+                    </Link>
+                  )}
 
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+            </>
+          )}
         </div>
       </main>
     </>
