@@ -57,40 +57,40 @@ export default function Home() {
       if (term.toLowerCase().startsWith("t+")) {
         const searchTerm = term.replace("t+", "");
         filterData = filterData.filter((paper) =>
-          paper.title.toLowerCase().includes(searchTerm),
+          paper.title.toLowerCase().includes(searchTerm.toLowerCase()),
         );
       } else if (term.toLowerCase().startsWith("t-")) {
         const searchTerm = term.replace("t-", "");
         filterData = filterData.filter(
-          (paper) => !paper.title.toLowerCase().includes(searchTerm),
+          (paper) => !paper.title.toLowerCase().includes(searchTerm.toLowerCase()),
         );
       } else if (term.toLowerCase().startsWith("a+")) {
         const searchTerm = term.replace("a+", "");
         filterData = filterData.filter((paper) =>
-          paper.abstract.toLowerCase().includes(searchTerm),
+          paper.abstract.toLowerCase().includes(searchTerm.toLowerCase()),
         );
       } else if (term.toLowerCase().startsWith("a-")) {
         const searchTerm = term.replace("a-", "");
         filterData = filterData.filter(
-          (paper) => !paper.abstract.toLowerCase().includes(searchTerm),
+          (paper) => !paper.abstract.toLowerCase().includes(searchTerm.toLowerCase()),
         );
       } else if (term.toLowerCase().startsWith("au+")) {
         const searchTerm = term.replace("au+", "");
         filterData = filterData.filter((paper) =>
-          paper.authors.join(", ").toLowerCase().includes(searchTerm),
+          paper.authors.join(", ").toLowerCase().includes(searchTerm.toLowerCase()),
         );
       } else if (term.toLowerCase().startsWith("au-")) {
         const searchTerm = term.replace("au-", "");
         filterData = filterData.filter(
           (paper) =>
-            !paper.authors.join(", ").toLowerCase().includes(searchTerm),
+            !paper.authors.join(", ").toLowerCase().includes(searchTerm.toLowerCase()),
         );
       } else {
         filterData = filterData.filter(
           (paper) =>
-            paper.title.toLowerCase().includes(term) ||
-            paper.authors.join(", ").toLowerCase().includes(term) ||
-            paper.abstract.toLowerCase().includes(term),
+            paper.title.toLowerCase().includes(term.toLowerCase()) ||
+            paper.authors.join(", ").toLowerCase().includes(term.toLowerCase()) ||
+            paper.abstract.toLowerCase().includes(term.toLowerCase()),
         );
       }
     });
