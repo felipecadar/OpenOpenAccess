@@ -12,20 +12,7 @@ type paper_type = {
   supp: string | null | undefined;
 };
 
-function SearchTerm(term: string) {
-  return (
-    <span className="m-1 rounded border-[1px] border-solid border-slate-700 bg-slate-200 font-mono">
-      {term}
-    </span>
-  );
-}
-
 export default function Home() {
-  // get db.json from public folder
-  // const data = fetch('/db.json')
-  //   .then(response => response.json())
-  //   .catch(error => console.error(error))
-
   const [ogdata, ogsetData] = useState<paper_type[]>([]);
   const [data, setData] = useState<paper_type[]>([]);
   const [search, setSearch] = useState<string>("");
@@ -67,37 +54,38 @@ export default function Home() {
 
     const searchTerms = search.split(" ");
     searchTerms.forEach((term) => {
-      if (term.includes("t+")) {
+      if (term.toLowerCase().startsWith("t+")) {
         const searchTerm = term.replace("t+", "");
         filterData = filterData.filter((paper) =>
           paper.title.toLowerCase().includes(searchTerm),
         );
-      } else if (term.toLowerCase().includes("t-")) {
+      } else if (term.toLowerCase().startsWith("t-")) {
         const searchTerm = term.replace("t-", "");
         filterData = filterData.filter(
           (paper) => !paper.title.toLowerCase().includes(searchTerm),
         );
-      } else if (term.toLowerCase().includes("a+")) {
+      } else if (term.toLowerCase().startsWith("a+")) {
         const searchTerm = term.replace("a+", "");
         filterData = filterData.filter((paper) =>
           paper.abstract.toLowerCase().includes(searchTerm),
         );
-      } else if (term.toLowerCase().includes("a-")) {
+      } else if (term.toLowerCase().startsWith("a-")) {
         const searchTerm = term.replace("a-", "");
         filterData = filterData.filter(
           (paper) => !paper.abstract.toLowerCase().includes(searchTerm),
         );
-      } else if (term.toLowerCase().includes("au+")) {
+      } else if (term.toLowerCase().startsWith("au+")) {
         const searchTerm = term.replace("au+", "");
         filterData = filterData.filter((paper) =>
           paper.authors.join(", ").toLowerCase().includes(searchTerm),
         );
-      } else if (term.toLowerCase().includes("au-")) {
+      } else if (term.toLowerCase().startsWith("au-")) {
         const searchTerm = term.replace("au-", "");
         filterData = filterData.filter(
           (paper) =>
             !paper.authors.join(", ").toLowerCase().includes(searchTerm),
         );
+      // }
       } else {
         filterData = filterData.filter(
           (paper) =>
