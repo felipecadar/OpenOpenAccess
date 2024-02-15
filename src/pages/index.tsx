@@ -12,6 +12,14 @@ type paper_type = {
   supp: string | null | undefined;
 };
 
+function SearchTerm(term: string) {
+  return (
+    <span className="m-1 rounded border-[1px] border-solid border-slate-700 bg-slate-200 font-mono">
+      {term}
+    </span>
+  );
+}
+
 export default function Home() {
   // get db.json from public folder
   // const data = fetch('/db.json')
@@ -84,18 +92,18 @@ export default function Home() {
         filterData = filterData.filter((paper) =>
           paper.authors.join(", ").toLowerCase().includes(searchTerm),
         );
-      }
-      else if (term.toLowerCase().includes("au-")) {
+      } else if (term.toLowerCase().includes("au-")) {
         const searchTerm = term.replace("au-", "");
         filterData = filterData.filter(
-          (paper) => !paper.authors.join(", ").toLowerCase().includes(searchTerm),
+          (paper) =>
+            !paper.authors.join(", ").toLowerCase().includes(searchTerm),
         );
-      }
-      else {
-        filterData = filterData.filter((paper) =>
-          paper.title.toLowerCase().includes(term) ||
-          paper.authors.join(", ").toLowerCase().includes(term) ||
-          paper.abstract.toLowerCase().includes(term),
+      } else {
+        filterData = filterData.filter(
+          (paper) =>
+            paper.title.toLowerCase().includes(term) ||
+            paper.authors.join(", ").toLowerCase().includes(term) ||
+            paper.abstract.toLowerCase().includes(term),
         );
       }
     });
@@ -110,34 +118,64 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center bg-white">
-        <h1 className="text-4xl font-bold pt-20 ">Open Open Access</h1>
+        <h1 className="pt-20 text-4xl font-bold ">Open Open Access</h1>
         {/* make a nice header with the using instructions*/}
         {/* make it colapsable */}
 
         {/* Collapsible section */}
-        <div className="flex flex-col items-center justify-center gap-4 pt-4">
+        <div className="flex flex-col items-start justify-center gap-4 pt-4">
           {!isSectionCollapsed && (
             <>
               <p className="">
                 Search for papers by title, authors, or abstract
               </p>
               <p className="">
-                Use t+ to search for the title including the search term
+                Use
+                <span className=" m-1 rounded border-[1px] border-solid border-slate-700 bg-slate-200 font-mono ">
+                  {" "}
+                  t+{" "}
+                </span>
+                to search for the title including the search term
               </p>
               <p className="">
-                Use t- to search for the title excluding the search term
+                Use
+                <span className=" m-1 rounded border-[1px] border-solid border-slate-700 bg-slate-200 font-mono ">
+                  {" "}
+                  t-{" "}
+                </span>
+                to search for the title excluding the search term
               </p>
               <p className="">
-                Use a+ to search for the abstract including the search term
+                Use
+                <span className=" m-1 rounded border-[1px] border-solid border-slate-700 bg-slate-200 font-mono ">
+                  {" "}
+                  a+{" "}
+                </span>
+                to search for the abstract including the search term
               </p>
               <p className="">
-                Use a- to search for the abstract excluding the search term
+                Use
+                <span className=" m-1 rounded border-[1px] border-solid border-slate-700 bg-slate-200 font-mono ">
+                  {" "}
+                  a-{" "}
+                </span>
+                to search for the abstract excluding the search term
               </p>
               <p className="">
-                Use au+ to search for the authors including the search term
+                Use
+                <span className=" m-1 rounded border-[1px] border-solid border-slate-700 bg-slate-200 font-mono ">
+                  {" "}
+                  au+{" "}
+                </span>
+                to search for the authors including the search term
               </p>
               <p className="">
-                Use au- to search for the authors excluding the search term
+                Use
+                <span className=" m-1 rounded border-[1px] border-solid border-slate-700 bg-slate-200 font-mono ">
+                  {" "}
+                  au-{" "}
+                </span>
+                to search for the authors excluding the search term
               </p>
               <p className="">Separate all terms by space</p>
             </>
@@ -145,15 +183,14 @@ export default function Home() {
         </div>
 
         {/* make in input box */}
-        <div className="flex flex-row items-center justify-center gap-4 pt-4">
+        <div className="flex flex-row flex-wrap items-center justify-center gap-4 pt-4">
           <input
             type="text"
             placeholder="Search"
-            className="rounded-md px-4 py-2 border-2 border-slate-300 w-96"
+            className="w-96 rounded-md border-2 border-slate-300 px-4 py-2"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          {/* <button className="bg-white text-black px-4 py-2 rounded-md" onClick={searchFilter}>Search</button> */}
           <button
             className="rounded-md bg-blue-500 px-4 py-2 text-white"
             onClick={() => setIsSectionCollapsed(!isSectionCollapsed)}
@@ -162,46 +199,53 @@ export default function Home() {
           </button>
         </div>
 
-        {/* found X out of Y.... */}
-
         {/* make a nice list of papers */}
 
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-          {search.length > 0  && (
+          {search.length > 0 && (
             <>
-            <p className="pt-4 ">{`Filtered ${data.length} out of ${ogdata.length} papers`}</p>
-            {data.slice(0, 100).map((paper, index) => (
-              <div
-                key={index}
-                className="flex flex-col items-center justify-center gap-4 border-2 border-slate-300 rounded-2xl p-10 "
-              >
-                <h1 className="text-3xl font-bold ">{paper.title}</h1>
-                <p className="">
-                  {paper.authors.join(", ")}
-                </p>
-                <p className="">{paper.abstract}</p>
-                <div className="flex flex-row gap-4">
-                  {paper.arXiv && (
-                    // make a nice arXiv button
-                    <Link href={paper.arXiv}>
-                      <button className="rounded-md bg-blue-100 px-4 py-2 text-black">
-                        arXiv
-                      </button>
-                    </Link>
-                  )}
+              <p className="pt-4 ">{`Filtered ${data.length} out of ${ogdata.length} papers`}</p>
+              {data.slice(0, 200).map((paper, index) => (
+                <div
+                  key={index}
+                  className="flex flex-col items-center justify-center gap-4 rounded-2xl border-2 border-slate-300 p-10 "
+                >
+                  <h1 className="text-justify text-3xl font-bold">
+                    {paper.title}
+                  </h1>
 
-                  {paper.pdf && (
-                    // make a nice pdf button
-                    <Link href={paper.pdf}>
-                      <button className="rounded-md bg-blue-100 px-4 py-2 text-black">
-                        PDF
-                      </button>
-                    </Link>
-                  )}
+                  <p className="">{paper.authors.join(", ")}</p>
 
+                  <p className=" text-justify ">{paper.abstract}</p>
+
+                  {/* show bibref as mono text */}
+                  <div className="flex flex-row gap-4">
+                    {paper.bibref && (
+                      <span className="rounded border-[1px] border-solid border-slate-700 bg-slate-200 p-1 text-justify font-mono text-xs ">
+                        {paper.bibref}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-row gap-4">
+                    {paper.arXiv && (
+                      <Link href={paper.arXiv}>
+                        <button className="rounded-md bg-blue-100 px-4 py-2 text-black">
+                          arXiv
+                        </button>
+                      </Link>
+                    )}
+
+                    {paper.pdf && (
+                      <Link href={paper.pdf}>
+                        <button className="rounded-md bg-blue-100 px-4 py-2 text-black">
+                          PDF
+                        </button>
+                      </Link>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
             </>
           )}
         </div>
