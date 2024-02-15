@@ -85,7 +85,6 @@ export default function Home() {
           (paper) =>
             !paper.authors.join(", ").toLowerCase().includes(searchTerm),
         );
-      // }
       } else {
         filterData = filterData.filter(
           (paper) =>
