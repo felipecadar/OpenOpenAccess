@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/alt-text */
+/* eslint-disable @next/next/no-img-element */
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -13,10 +15,22 @@ type paper_type = {
 };
 
 export default function Home() {
+  const all_dogs = {
+    regular: "/paperhoundlogo/PaperHound_regular.png",
+    akward: "/paperhoundlogo/PaperHound_akward.png",
+    angry: "/paperhoundlogo/PaperHound_angry.png",
+    cool: "/paperhoundlogo/PaperHound_cool.png",
+    curious: "/paperhoundlogo/PaperHound_curious.png",
+    happy: "/paperhoundlogo/PaperHound_happy.png",
+  };
+
   const [ogdata, ogsetData] = useState<paper_type[]>([]);
   const [data, setData] = useState<paper_type[]>([]);
   const [search, setSearch] = useState<string>("");
   const [isSectionCollapsed, setIsSectionCollapsed] = useState(true);
+  const [dog_figure, setDogFigure] = useState<string>(
+    "/paperhoundlogo/PaperHound_regular.png",
+  );
 
   useEffect(() => {
     fetch("/db.json")
@@ -52,7 +66,7 @@ export default function Home() {
     // reset data to original data
     let filterData = ogdata;
 
-    const searchTerms = search.trim().split(" ");
+    const searchTerms = search.trim().split(" ").filter((term) => term.length > 0);
     searchTerms.forEach((term) => {
       if (term.toLowerCase().startsWith("t+")) {
         const searchTerm = term.replace("t+", "");
@@ -62,7 +76,8 @@ export default function Home() {
       } else if (term.toLowerCase().startsWith("t-")) {
         const searchTerm = term.replace("t-", "");
         filterData = filterData.filter(
-          (paper) => !paper.title.toLowerCase().includes(searchTerm.toLowerCase()),
+          (paper) =>
+            !paper.title.toLowerCase().includes(searchTerm.toLowerCase()),
         );
       } else if (term.toLowerCase().startsWith("a+")) {
         const searchTerm = term.replace("a+", "");
@@ -72,40 +87,78 @@ export default function Home() {
       } else if (term.toLowerCase().startsWith("a-")) {
         const searchTerm = term.replace("a-", "");
         filterData = filterData.filter(
-          (paper) => !paper.abstract.toLowerCase().includes(searchTerm.toLowerCase()),
+          (paper) =>
+            !paper.abstract.toLowerCase().includes(searchTerm.toLowerCase()),
         );
       } else if (term.toLowerCase().startsWith("au+")) {
         const searchTerm = term.replace("au+", "");
         filterData = filterData.filter((paper) =>
-          paper.authors.join(", ").toLowerCase().includes(searchTerm.toLowerCase()),
+          paper.authors
+            .join(", ")
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()),
         );
       } else if (term.toLowerCase().startsWith("au-")) {
         const searchTerm = term.replace("au-", "");
         filterData = filterData.filter(
           (paper) =>
-            !paper.authors.join(", ").toLowerCase().includes(searchTerm.toLowerCase()),
+            !paper.authors
+              .join(", ")
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase()),
         );
       } else {
         filterData = filterData.filter(
           (paper) =>
             paper.title.toLowerCase().includes(term.toLowerCase()) ||
-            paper.authors.join(", ").toLowerCase().includes(term.toLowerCase()) ||
+            paper.authors
+              .join(", ")
+              .toLowerCase()
+              .includes(term.toLowerCase()) ||
             paper.abstract.toLowerCase().includes(term.toLowerCase()),
         );
       }
     });
     setData(filterData);
+    setDogFigure(all_dogs.regular);
+
+    if (searchTerms.length > 0) {
+      if (filterData.length == 1) {
+        setDogFigure(all_dogs.happy);
+      } else if (filterData.length == 0) {
+        setDogFigure(all_dogs.angry);
+      } else if (filterData.length > 20) {
+        setDogFigure(all_dogs.curious);
+      }
+    } 
   }
 
   return (
     <>
       <Head>
-        <title>Open Open Access</title>
-        <meta name="description" content="" />
-        <link rel="icon" href="/favicon.ico" />
+        <title>PaperHound</title>
+        <meta name="description" content="Open Acess made easy." />
+        <link rel="icon" href="/Mini.png" />
+
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center bg-white">
-        <h1 className="pt-20 text-4xl font-bold ">Open Open Access</h1>
+        <div className="flex flex-row items-end justify-center gap-4 ">
+          <img src={dog_figure} className="w-24" />
+          <h1 className="pt-20 font-serif text-4xl font-bold  text-sky-900 ">
+            PaperHound
+          </h1>
+        </div>
+
+        {/* make a instruction button fixed on the top right corner in a shape of a little circle with an interrogation */}
+        <div className="fixed top-4 right-4">
+          <button
+            className="rounded-full bg-slate-200 px-4 py-2"
+            onClick={() => setIsSectionCollapsed(!isSectionCollapsed)}
+          >
+            ?
+          </button>
+        </div>
+
         {/* make a nice header with the using instructions*/}
         {/* make it colapsable */}
 
@@ -170,28 +223,27 @@ export default function Home() {
         </div>
 
         {/* make in input box */}
-        <div className="flex flex-row flex-wrap items-center justify-center gap-4 pt-4">
+        {/* <div className="flex flex-row flex-wrap items-center justify-center gap-4 pt-4"> */}
           <input
             type="text"
             placeholder="Search"
-            className="w-96 rounded-md border-2 border-slate-300 px-4 py-2"
+            className="w-96 rounded-md border-2 border-slate-300 px-4 py-2 focus:ring-sky-900 "
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <button
+          {/* <button
             className="rounded-md bg-blue-500 px-4 py-2 text-white"
             onClick={() => setIsSectionCollapsed(!isSectionCollapsed)}
           >
             {isSectionCollapsed ? "Show Instructions" : "Hide Instructions"}
-          </button>
-        </div>
+          </button> */}
+        {/* </div> */}
 
         {/* make a nice list of papers */}
 
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
+        <div className="container flex flex-col items-center justify-center gap-12 px-4  ">
           {search.length > 0 && (
             <>
-
               <p className="pt-4 ">{`Found ${data.length} out of ${ogdata.length} papers`}</p>
               {data.slice(0, 200).map((paper, index) => (
                 <div
