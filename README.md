@@ -1,4 +1,4 @@
-# Paper Round
+# Paper Hound
 
 It just searches papers across all the OpenAcess conferences and indexes in a cool web page.
 
