@@ -145,9 +145,9 @@ export default function Home() {
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-start bg-white">
         <div className="">
-          <div className="flex flex-row items-end justify-center gap-4">
-            <img src={dog_figure} className="w-24" />
-            <h1 className="pt-20 font-serif text-4xl font-bold  text-sky-900 ">
+          <div className="flex flex-row flex-wrap items-end justify-center gap-4 pt-20">
+            <img src={dog_figure} className="w-32" />
+            <h1 className=" font-serif text-6xl font-bold  text-sky-900 ">
               PaperHound
             </h1>
           </div>
@@ -231,7 +231,7 @@ export default function Home() {
         <input
           type="text"
           placeholder="Search"
-          className="w-96 rounded-md border-2 border-slate-300 px-4 py-2 focus:ring-sky-900 "
+          className=" rounded-md border-2 border-slate-300 px-4 py-2 focus:ring-sky-900 mx-10 w-3/4 max-w-96"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
