@@ -145,8 +145,8 @@ export default function Home() {
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-start bg-white">
         <div className="">
-          <div className="flex flex-row flex-wrap items-end justify-center gap-4 pt-20">
-            <img src={dog_figure} className="w-32" />
+          <div className="flex flex-row flex-wrap items-end justify-center gap-4 pt-20 pb-4">
+            <img src={dog_figure} className="w-28" />
             <h1 className=" font-serif text-6xl font-bold  text-sky-900 ">
               PaperHound
             </h1>
@@ -165,6 +165,24 @@ export default function Home() {
 
         {/* make a nice header with the using instructions*/}
         {/* make it colapsable */}
+
+        
+        {/* make in input box */}
+        {/* <div className="flex flex-row flex-wrap items-center justify-center gap-4 pt-4"> */}
+        <input
+          type="text"
+          placeholder="Search"
+          className=" rounded-md border-2 border-slate-300 px-4 py-2 focus:ring-sky-900 mx-10 w-3/4 max-w-96"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        {/* make a little comentary about where the papers came from */}
+        <p className="flex w-full flex-row justify-center gap-2 text-slate-700">
+          Everthing from{" "}
+          <a href="https://openaccess.thecvf.com/menu" className="text-sky-900">
+            Open Access
+          </a>
+        </p>
 
         {/* Collapsible section */}
         <div className="flex flex-col items-start justify-center gap-4 pt-4">
@@ -226,22 +244,6 @@ export default function Home() {
           )}
         </div>
 
-        {/* make in input box */}
-        {/* <div className="flex flex-row flex-wrap items-center justify-center gap-4 pt-4"> */}
-        <input
-          type="text"
-          placeholder="Search"
-          className=" rounded-md border-2 border-slate-300 px-4 py-2 focus:ring-sky-900 mx-10 w-3/4 max-w-96"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        {/* make a little comentary about where the papers came from */}
-        <p className="flex w-full flex-row justify-center gap-2 text-slate-700">
-          Everthing from{" "}
-          <a href="https://openaccess.thecvf.com/menu" className="text-sky-900">
-            Open Access
-          </a>
-        </p>
 
         {/* <button
                   className="rounded-md bg-blue-500 px-4 py-2 text-white"
