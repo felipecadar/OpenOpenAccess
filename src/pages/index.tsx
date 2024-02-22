@@ -66,7 +66,10 @@ export default function Home() {
     // reset data to original data
     let filterData = ogdata;
 
-    const searchTerms = search.trim().split(" ").filter((term) => term.length > 0);
+    const searchTerms = search
+      .trim()
+      .split(" ")
+      .filter((term) => term.length > 0);
     searchTerms.forEach((term) => {
       if (term.toLowerCase().startsWith("t+")) {
         const searchTerm = term.replace("t+", "");
@@ -130,7 +133,7 @@ export default function Home() {
       } else if (filterData.length > 20) {
         setDogFigure(all_dogs.curious);
       }
-    } 
+    }
   }
 
   return (
@@ -139,18 +142,19 @@ export default function Home() {
         <title>PaperHound</title>
         <meta name="description" content="Open Acess made easy." />
         <link rel="icon" href="/Mini.png" />
-
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-white">
-        <div className="flex flex-row items-end justify-center gap-4 ">
-          <img src={dog_figure} className="w-24" />
-          <h1 className="pt-20 font-serif text-4xl font-bold  text-sky-900 ">
-            PaperHound
-          </h1>
+      <main className="flex min-h-screen flex-col items-center justify-start bg-white">
+        <div className="">
+          <div className="flex flex-row items-end justify-center gap-4">
+            <img src={dog_figure} className="w-24" />
+            <h1 className="pt-20 font-serif text-4xl font-bold  text-sky-900 ">
+              PaperHound
+            </h1>
+          </div>
         </div>
 
         {/* make a instruction button fixed on the top right corner in a shape of a little circle with an interrogation */}
-        <div className="fixed top-4 right-4">
+        <div className="fixed right-4 top-4">
           <button
             className="rounded-full bg-slate-200 px-4 py-2"
             onClick={() => setIsSectionCollapsed(!isSectionCollapsed)}
@@ -224,19 +228,27 @@ export default function Home() {
 
         {/* make in input box */}
         {/* <div className="flex flex-row flex-wrap items-center justify-center gap-4 pt-4"> */}
-          <input
-            type="text"
-            placeholder="Search"
-            className="w-96 rounded-md border-2 border-slate-300 px-4 py-2 focus:ring-sky-900 "
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          {/* <button
-            className="rounded-md bg-blue-500 px-4 py-2 text-white"
-            onClick={() => setIsSectionCollapsed(!isSectionCollapsed)}
-          >
-            {isSectionCollapsed ? "Show Instructions" : "Hide Instructions"}
-          </button> */}
+        <input
+          type="text"
+          placeholder="Search"
+          className="w-96 rounded-md border-2 border-slate-300 px-4 py-2 focus:ring-sky-900 "
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        {/* make a little comentary about where the papers came from */}
+        <p className="flex w-full flex-row justify-center gap-2 text-slate-700">
+          Everthing from{" "}
+          <a href="https://openaccess.thecvf.com/menu" className="text-sky-900">
+            Open Access
+          </a>
+        </p>
+
+        {/* <button
+                  className="rounded-md bg-blue-500 px-4 py-2 text-white"
+                  onClick={() => setIsSectionCollapsed(!isSectionCollapsed)}
+                  >
+                  {isSectionCollapsed ? "Show Instructions" : "Hide Instructions"}
+                </button> */}
         {/* </div> */}
 
         {/* make a nice list of papers */}
