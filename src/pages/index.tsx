@@ -3,6 +3,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+// import Highlighter from "react-highlight-words"; 
 
 type paper_type = {
   title: string;
@@ -13,6 +14,26 @@ type paper_type = {
   bibref: string | null | undefined;
   supp: string | null | undefined;
 };
+
+function shuffle(array: paper_type[]) {
+  let currentIndex = array.length,
+    randomIndex;
+
+  // While there remain elements to shuffle.
+  while (currentIndex > 0) {
+    // Pick a remaining element.
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex]!,
+      array[currentIndex]!,
+    ];
+  }
+
+  return array;
+}
 
 export default function Home() {
   const all_dogs = {
@@ -28,6 +49,7 @@ export default function Home() {
   const [data, setData] = useState<paper_type[]>([]);
   const [search, setSearch] = useState<string>("");
   const [isSectionCollapsed, setIsSectionCollapsed] = useState(true);
+  const [keyWords, setKeyWords] = useState<string[]>([]);
   const [isLegalSectionCollapsed, setIsLegalSectionCollapsed] = useState(false);
   const [dog_figure, setDogFigure] = useState<string>(
     "/paperhoundlogo/PaperHound_regular.png",
@@ -39,9 +61,11 @@ export default function Home() {
       // .then(data => setData(data))
       .then((data) => {
         // filter empty data ( without title or authors or abstract )
-        const filteredData = data.filter(
+        let filteredData = data.filter(
           (paper) => paper.title && paper.authors && paper.abstract,
         );
+        // shuffle the data
+        filteredData = shuffle(filteredData);
         ogsetData(filteredData);
         setData(filteredData);
       })
@@ -66,6 +90,7 @@ export default function Home() {
 
     // reset data to original data
     let filterData = ogdata;
+    const _keyWords = [] as string[];
 
     const searchTerms = search
       .trim()
@@ -74,6 +99,7 @@ export default function Home() {
     searchTerms.forEach((term) => {
       if (term.toLowerCase().startsWith("t+")) {
         const searchTerm = term.replace("t+", "");
+        _keyWords.push(searchTerm);
         filterData = filterData.filter((paper) =>
           paper.title.toLowerCase().includes(searchTerm.toLowerCase()),
         );
@@ -85,6 +111,7 @@ export default function Home() {
         );
       } else if (term.toLowerCase().startsWith("a+")) {
         const searchTerm = term.replace("a+", "");
+        _keyWords.push(searchTerm);
         filterData = filterData.filter((paper) =>
           paper.abstract.toLowerCase().includes(searchTerm.toLowerCase()),
         );
@@ -96,6 +123,7 @@ export default function Home() {
         );
       } else if (term.toLowerCase().startsWith("au+")) {
         const searchTerm = term.replace("au+", "");
+        _keyWords.push(searchTerm);
         filterData = filterData.filter((paper) =>
           paper.authors
             .join(", ")
@@ -112,6 +140,7 @@ export default function Home() {
               .includes(searchTerm.toLowerCase()),
         );
       } else {
+        _keyWords.push(term);
         filterData = filterData.filter(
           (paper) =>
             paper.title.toLowerCase().includes(term.toLowerCase()) ||
@@ -123,6 +152,8 @@ export default function Home() {
         );
       }
     });
+
+    setKeyWords(_keyWords);
     setData(filterData);
     setDogFigure(all_dogs.regular);
 
@@ -198,9 +229,13 @@ export default function Home() {
                 className="text-sky-900"
               >
                 Open Access
-              </a> 
-              <p> versions, provided by the  {""}
-                <a className="text-sky-900" href="https://www.thecvf.com/">Computer Vision Foundation</a>
+              </a>
+              <p>
+                {" "}
+                versions, provided by the {""}
+                <a className="text-sky-900" href="https://www.thecvf.com/">
+                  Computer Vision Foundation
+                </a>
                 .
               </p>
               <p>
@@ -291,47 +326,72 @@ export default function Home() {
           {search.length > 0 && (
             <>
               <p className="pt-4 ">{`Found ${data.length} out of ${ogdata.length} papers`}</p>
-              {data.slice(0, 200).map((paper, index) => (
-                <div
-                  key={index}
-                  className="flex flex-col items-center justify-center gap-4 rounded-2xl border-2 border-slate-300 p-10 "
-                >
-                  <h1 className="text-justify text-3xl font-bold">
-                    {paper.title}
-                  </h1>
+              {data.slice(0, 200).map((paper, index) => {
+                const authors = paper.authors.join(", ");
+                const title = paper.title;
+                const abstract = paper.abstract;
 
-                  <p className="">{paper.authors.join(", ")}</p>
+                return (
+                  <div
+                    key={index}
+                    className="flex flex-col items-center justify-center gap-4 rounded-2xl border-2 border-slate-300 p-10 "
+                  >
+                    <h1 className="text-justify text-3xl font-bold">
+                      {/* <Highlighter 
+                        highlightClassName="YourHighlightClass"
+                        searchWords={keyWords} 
+                        autoEscape={true} 
+                        textToHighlight={title}
+                      /> */}
+                      {title}
+                    </h1>
 
-                  <p className=" text-justify ">{paper.abstract}</p>
+                    <p className="">{authors}</p>
+                    {/* <Highlighter 
+                      highlightClassName="YourHighlightClass"
+                      searchWords={keyWords} 
+                      autoEscape={true} 
+                      textToHighlight={authors}
+                    />  */}
 
-                  {/* show bibref as mono text */}
-                  <div className="flex flex-row gap-4">
-                    {paper.bibref && (
-                      <span className="rounded border-[1px] border-solid border-slate-700 bg-slate-200 p-1 text-justify font-mono text-xs ">
-                        {paper.bibref}
-                      </span>
-                    )}
+                    <p className=" text-justify ">{abstract}</p>
+
+                    {/* <Highlighter 
+                      highlightClassName="YourHighlightClass"
+                      searchWords={keyWords} 
+                      autoEscape={true} 
+                      textToHighlight={abstract}
+                    /> */}
+
+                    {/* show bibref as mono text */}
+                    <div className="flex flex-row gap-4">
+                      {paper.bibref && (
+                        <span className="rounded border-[1px] border-solid border-slate-700 bg-slate-200 p-1 text-justify font-mono text-xs ">
+                          {paper.bibref}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex flex-row gap-4">
+                      {paper.arXiv && (
+                        <Link href={paper.arXiv}>
+                          <button className="rounded-md bg-blue-100 px-4 py-2 text-black">
+                            arXiv
+                          </button>
+                        </Link>
+                      )}
+
+                      {paper.pdf && (
+                        <Link href={paper.pdf}>
+                          <button className="rounded-md bg-blue-100 px-4 py-2 text-black">
+                            PDF
+                          </button>
+                        </Link>
+                      )}
+                    </div>
                   </div>
-
-                  <div className="flex flex-row gap-4">
-                    {paper.arXiv && (
-                      <Link href={paper.arXiv}>
-                        <button className="rounded-md bg-blue-100 px-4 py-2 text-black">
-                          arXiv
-                        </button>
-                      </Link>
-                    )}
-
-                    {paper.pdf && (
-                      <Link href={paper.pdf}>
-                        <button className="rounded-md bg-blue-100 px-4 py-2 text-black">
-                          PDF
-                        </button>
-                      </Link>
-                    )}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </>
           )}
         </div>
