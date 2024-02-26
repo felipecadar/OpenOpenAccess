@@ -346,7 +346,7 @@ export default function Home() {
                       {title}
                     </h1>
 
-                    <p className="">{authors}</p>
+                    <p className="">{authors}</p> 
                     {/* <Highlighter 
                       highlightClassName="YourHighlightClass"
                       searchWords={keyWords} 
