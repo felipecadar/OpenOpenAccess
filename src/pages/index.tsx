@@ -28,6 +28,7 @@ export default function Home() {
   const [data, setData] = useState<paper_type[]>([]);
   const [search, setSearch] = useState<string>("");
   const [isSectionCollapsed, setIsSectionCollapsed] = useState(true);
+  const [isLegalSectionCollapsed, setIsLegalSectionCollapsed] = useState(false);
   const [dog_figure, setDogFigure] = useState<string>(
     "/paperhoundlogo/PaperHound_regular.png",
   );
@@ -145,7 +146,7 @@ export default function Home() {
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-start bg-white">
         <div className="">
-          <div className="flex flex-row flex-wrap items-end justify-center gap-4 pt-20 pb-4">
+          <div className="flex flex-row flex-wrap items-end justify-center gap-4 pb-4 pt-20">
             <img src={dog_figure} className="w-28" />
             <h1 className=" font-serif text-6xl font-bold  text-sky-900 ">
               PaperHound
@@ -166,23 +167,55 @@ export default function Home() {
         {/* make a nice header with the using instructions*/}
         {/* make it colapsable */}
 
-        
         {/* make in input box */}
         {/* <div className="flex flex-row flex-wrap items-center justify-center gap-4 pt-4"> */}
         <input
           type="text"
           placeholder="Search"
-          className=" rounded-md border-2 border-slate-300 px-4 py-2 focus:ring-sky-900 mx-10 w-3/4 max-w-96"
+          className=" mx-10 w-3/4 max-w-96 rounded-md border-2 border-slate-300 px-4 py-2 focus:ring-sky-900"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         {/* make a little comentary about where the papers came from */}
-        <p className="flex w-full flex-row justify-center gap-2 text-slate-700">
-          Everthing from{" "}
-          <a href="https://openaccess.thecvf.com/menu" className="text-sky-900">
-            Open Access
-          </a>
-        </p>
+        {/* <p className="flex w-full flex-row flex-wrap justify-center text-justify gap-2 text-slate-700"> */}
+        {/* make a fixed footer */}
+        {!isLegalSectionCollapsed && (
+          <div className="fixed bottom-0 w-full bg-slate-200 p-4">
+            {/* add a little x to close it on the top right corner */}
+            <button
+              className="float-right rounded-full bg-slate-300 px-4 py-2"
+              onClick={() =>
+                setIsLegalSectionCollapsed(!isLegalSectionCollapsed)
+              }
+            >
+              Close
+            </button>
+
+            <div className="flex w-full flex-row flex-wrap justify-start gap-2 text-justify text-slate-700 ">
+              <p>These research papers are the</p>
+              <a
+                href="https://openaccess.thecvf.com/menu"
+                className="text-sky-900"
+              >
+                Open Access
+              </a> 
+              <p> versions, provided by the  {""}
+                <a className="text-sky-900" href="https://www.thecvf.com/">Computer Vision Foundation</a>
+                .
+              </p>
+              <p>
+                Except for the watermark, they are identical to the accepted
+                versions; the final published version of the proceedings is
+                available on IEEE Xplore.This material is presented to ensure
+                timely dissemination of scholarly and technical work. Copyright
+                and all rights therein are retained by authors or by other
+                copyright holders. All persons copying this information are
+                expected to adhere to the terms and constraints invoked by each
+                authors copyright.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Collapsible section */}
         <div className="flex flex-col items-start justify-center gap-4 pt-4">
@@ -244,7 +277,6 @@ export default function Home() {
           )}
         </div>
 
-
         {/* <button
                   className="rounded-md bg-blue-500 px-4 py-2 text-white"
                   onClick={() => setIsSectionCollapsed(!isSectionCollapsed)}
@@ -255,7 +287,7 @@ export default function Home() {
 
         {/* make a nice list of papers */}
 
-        <div className="container flex flex-col items-center justify-center gap-12 px-4  ">
+        <div className="container flex flex-col items-center justify-center gap-12 px-4 pb-28 ">
           {search.length > 0 && (
             <>
               <p className="pt-4 ">{`Found ${data.length} out of ${ogdata.length} papers`}</p>
