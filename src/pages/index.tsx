@@ -2,6 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 import Head from "next/head";
 import Link from "next/link";
+import { GoogleAnalytics } from '@next/third-parties/google'
 import { useEffect, useState } from "react";
 
 type paper_type = {
@@ -139,6 +140,7 @@ export default function Home() {
   return (
     <>
       <Head>
+        <GoogleAnalytics gaId="G-KGYPSRTDMQ" />
         <title>PaperHound</title>
         <meta name="description" content="Open Acess made easy." />
         <link rel="icon" href="/Mini.png" />
