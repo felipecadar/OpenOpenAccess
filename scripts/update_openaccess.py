@@ -115,12 +115,21 @@ def fetch_each_paper_info(url):
             "error": str(e)
         }
 
+def join_all_papers():
+    all_papers = []
+    for file in os.listdir("papers"):
+        with open(f"papers/{file}", "r") as f:
+            all_papers.append(json.load(f))
+            
+    with open("papers_info.json", "w") as f:
+        json.dump(all_papers, f)
+    return all_papers
+
 if __name__ == "__main__":
     
     BASE_URL_EXTRA = "https://openaccess.thecvf.com/menu_other.html"
     BASE_URL_MENU = "https://openaccess.thecvf.com/menu"
     BASE_URL = "https://openaccess.thecvf.com"
-    
     
     if os.path.exists("papers_links.json"):
         with open("papers_links.json", "r") as f:
@@ -156,5 +165,3 @@ if __name__ == "__main__":
         
     with open("papers_info.json", "w") as f:
         json.dump(papers_info, f)
-        
-    print(f"Found {len(papers_info)} papers")

@@ -7,12 +7,13 @@ import { useEffect, useState } from "react";
 
 type paper_type = {
   title: string;
-  authors: string[];
+  authors: string;
   abstract: string;
   arXiv: string | null | undefined;
   pdf: string | null | undefined;
   bibref: string | null | undefined;
   supp: string | null | undefined;
+  openaccess_url: string | null | undefined;
 };
 
 function shuffle(array: paper_type[]) {
@@ -56,7 +57,7 @@ export default function Home() {
   );
 
   useEffect(() => {
-    fetch("/db.json")
+    fetch("/papers_info.json")
       .then((response) => response.json() as Promise<paper_type[]>)
       // .then(data => setData(data))
       .then((data) => {
@@ -88,6 +89,8 @@ export default function Home() {
 
     // separate all terms by space
 
+    const valid_inits = ["t+", "t-", "a+", "a-", "au+", "au-"];
+
     // reset data to original data
     let filterData = ogdata;
     const _keyWords = [] as string[];
@@ -97,6 +100,15 @@ export default function Home() {
       .split(" ")
       .filter((term) => term.length > 0);
     searchTerms.forEach((term) => {
+      // if starts with t, a, au followed by + or -, make sure there is a term after it
+      if (
+        valid_inits.includes(term.toLowerCase().slice(0, 2)) &&
+        term.length < 3
+      ) {
+        // skip this term
+        return;
+      }
+
       if (term.toLowerCase().startsWith("t+")) {
         const searchTerm = term.replace("t+", "");
         _keyWords.push(searchTerm);
@@ -126,7 +138,6 @@ export default function Home() {
         _keyWords.push(searchTerm);
         filterData = filterData.filter((paper) =>
           paper.authors
-            .join(", ")
             .toLowerCase()
             .includes(searchTerm.toLowerCase()),
         );
@@ -135,7 +146,6 @@ export default function Home() {
         filterData = filterData.filter(
           (paper) =>
             !paper.authors
-              .join(", ")
               .toLowerCase()
               .includes(searchTerm.toLowerCase()),
         );
@@ -145,7 +155,6 @@ export default function Home() {
           (paper) =>
             paper.title.toLowerCase().includes(term.toLowerCase()) ||
             paper.authors
-              .join(", ")
               .toLowerCase()
               .includes(term.toLowerCase()) ||
             paper.abstract.toLowerCase().includes(term.toLowerCase()),
@@ -327,7 +336,7 @@ export default function Home() {
             <>
               <p className="pt-4 ">{`Found ${data.length} out of ${ogdata.length} papers`}</p>
               {data.slice(0, 200).map((paper, index) => {
-                const authors = paper.authors.join(", ");
+                const authors = paper.authors;
                 const title = paper.title;
                 const abstract = paper.abstract;
 
@@ -373,6 +382,14 @@ export default function Home() {
                     </div>
 
                     <div className="flex flex-row gap-4">
+                      {paper.openaccess_url && (
+                        <Link href={paper.openaccess_url}>
+                          <button className="rounded-md bg-blue-100 px-4 py-2 text-black">
+                            Open Access
+                          </button>
+                        </Link>
+                      )}
+
                       {paper.arXiv && (
                         <Link href={paper.arXiv}>
                           <button className="rounded-md bg-blue-100 px-4 py-2 text-black">
@@ -388,6 +405,14 @@ export default function Home() {
                           </button>
                         </Link>
                       )}
+                       {paper.supp && (
+                        <Link href={paper.supp}>
+                          <button className="rounded-md bg-blue-100 px-4 py-2 text-black">
+                            Supplementary
+                          </button>
+                        </Link>
+                      )}
+
                     </div>
                   </div>
                 );
