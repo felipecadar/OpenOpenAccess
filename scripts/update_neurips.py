@@ -52,12 +52,12 @@ def get_single_paper(url):
     
     try:
         pdf = soup.find("a", string="Paper")["href"]
-        paper_info["pdf"] = pdf
+        paper_info["pdf"] = urljoin(url, pdf)
     except:
         pass
     try:
         supplemental = soup.find("a", string="Supplemental")["href"]        
-        paper_info["supp"] = supplemental
+        paper_info["supp"] = urljoin(url, supplemental)
     except:
         pass
     
