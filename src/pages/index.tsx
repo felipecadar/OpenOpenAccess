@@ -14,6 +14,7 @@ type paper_type = {
   bibref: string | null | undefined;
   supp: string | null | undefined;
   openaccess_url: string | null | undefined;
+  NeurIPS: string | null | undefined;
 };
 
 function shuffle(array: paper_type[]) {
@@ -409,6 +410,14 @@ export default function Home() {
                         <Link href={paper.supp}>
                           <button className="rounded-md bg-blue-100 px-4 py-2 text-black">
                             Supplementary
+                          </button>
+                        </Link>
+                      )}
+
+                      {paper.NeurIPS && (
+                        <Link href={paper.NeurIPS}>
+                          <button className="rounded-md bg-blue-100 px-4 py-2 text-black">
+                            NeurIPS
                           </button>
                         </Link>
                       )}
