@@ -84,6 +84,8 @@ export default function Home() {
 
   useEffect(() => {
     searchFilter();
+    const encoded_query = encodeURIComponent(search);
+    window.history.pushState({}, "", `/?search=${encoded_query}`);
   }, [search]);
 
   function searchFilter() {
