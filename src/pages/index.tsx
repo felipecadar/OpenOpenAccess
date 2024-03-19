@@ -62,6 +62,29 @@ export default function Home() {
     document.getElementById("search")?.focus();
   }, []);
 
+  function handleSearchChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setSearch(event.target.value);
+    // set it as a query parameter
+    const encoded_query = encodeURIComponent(event.target.value);
+    window.history.pushState(
+      {},
+      "",
+      `/?search=${encoded_query}`,
+    );
+  }
+
+  // load the search from the query parameter
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchParam = urlParams.get("search");
+    if (searchParam) {
+      setSearch(searchParam);
+      // make the search input focused
+      document.getElementById("search")?.focus();
+      searchFilter();
+    }
+  }, [ogdata]);
+
   useEffect(() => {
     fetch("/papers_info.json")
       .then((response) => response.json() as Promise<paper_type[]>)
@@ -75,6 +98,15 @@ export default function Home() {
         filteredData = shuffle(filteredData);
         ogsetData(filteredData);
         setData(filteredData);
+      })
+      .then(() => {
+        // if there is a search query, run the search filter
+        if (search.length > 0) {
+          searchFilter();
+          console.log("search");
+        }else{
+          console.log("no search");
+        }
       })
       .catch((error) => console.error(error));
   }, []);
@@ -221,7 +253,7 @@ export default function Home() {
           placeholder="Search"
           className=" mx-10 w-3/4 max-w-96 rounded-md border-2 border-slate-300 px-4 py-2 focus:ring-sky-900"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={handleSearchChange}
         />
         {/* make a little comentary about where the papers came from */}
         {/* <p className="flex w-full flex-row flex-wrap justify-center text-justify gap-2 text-slate-700"> */}
