@@ -270,13 +270,19 @@ export default function Home() {
             {cutTerms.map(([term, count], index) => (
               // <p key={index}>{`${term} : ${count}`}</p>
               <div
+                // show a help message when hovering over the term depending on the scissorsPuss
+                title={
+                  scissorsPuss
+                    ? `Remove ${term} to the search`
+                    : `Add ${term} from the search`
+                }
                 key={index}
                 onClick={() => {
                   const operation = scissorsPuss ? "t-" : "t+";
                   setSearch(`${search} ${operation}${term.replace(/ /g, "_")}`);
                 }}
                 className={clsx(
-                  "gap- flex items-center justify-center rounded-full px-4 py-2",
+                  "gap- flex items-center justify-center rounded-full px-4 py-2 cursor-pointer",
                   scissorsPuss ? "bg-sky-900 text-white" : "bg-slate-200",
                 )}
               >
