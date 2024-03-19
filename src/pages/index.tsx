@@ -57,6 +57,11 @@ export default function Home() {
     "/paperhoundlogo/PaperHound_regular.png",
   );
 
+  // focus on search input when page loads
+  useEffect(() => {
+    document.getElementById("search")?.focus();
+  }, []);
+
   useEffect(() => {
     fetch("/papers_info.json")
       .then((response) => response.json() as Promise<paper_type[]>)
@@ -212,6 +217,7 @@ export default function Home() {
         {/* <div className="flex flex-row flex-wrap items-center justify-center gap-4 pt-4"> */}
         <input
           type="text"
+          id="search"
           placeholder="Search"
           className=" mx-10 w-3/4 max-w-96 rounded-md border-2 border-slate-300 px-4 py-2 focus:ring-sky-900"
           value={search}
