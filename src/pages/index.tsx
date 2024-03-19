@@ -1,41 +1,13 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
 import Head from "next/head";
-import Link from "next/link";
 import { useEffect, useState } from "react";
-// import Highlighter from "react-highlight-words"; 
+import HelpSection from "~/components/help_section";
+import LegalSection from "~/components/legal_section";
+import PaperView, { type paper_type } from "~/components/paper_view";
+import { ignore_words, shuffle } from "~/components/utils";
 
-type paper_type = {
-  title: string;
-  authors: string;
-  abstract: string;
-  arXiv: string | null | undefined;
-  pdf: string | null | undefined;
-  bibref: string | null | undefined;
-  supp: string | null | undefined;
-  openaccess_url: string | null | undefined;
-  NeurIPS: string | null | undefined;
-};
-
-function shuffle(array: paper_type[]) {
-  let currentIndex = array.length,
-    randomIndex;
-
-  // While there remain elements to shuffle.
-  while (currentIndex > 0) {
-    // Pick a remaining element.
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-
-    // And swap it with the current element.
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex]!,
-      array[currentIndex]!,
-    ];
-  }
-
-  return array;
-}
+import clsx from "clsx";
 
 export default function Home() {
   const all_dogs = {
@@ -56,6 +28,9 @@ export default function Home() {
   const [dog_figure, setDogFigure] = useState<string>(
     "/paperhoundlogo/PaperHound_regular.png",
   );
+  // tuple of [term, count]
+  const [cutTerms, setCutTerms] = useState<[string, number][]>([]);
+  const [scissorsPuss, setScissorsPuss] = useState(true);
 
   // focus on search input when page loads
   useEffect(() => {
@@ -66,11 +41,7 @@ export default function Home() {
     setSearch(event.target.value);
     // set it as a query parameter
     const encoded_query = encodeURIComponent(event.target.value);
-    window.history.pushState(
-      {},
-      "",
-      `/?search=${encoded_query}`,
-    );
+    window.history.pushState({}, "", `/?search=${encoded_query}`);
   }
 
   // load the search from the query parameter
@@ -104,7 +75,7 @@ export default function Home() {
         if (search.length > 0) {
           searchFilter();
           console.log("search");
-        }else{
+        } else {
           console.log("no search");
         }
       })
@@ -175,26 +146,20 @@ export default function Home() {
         const searchTerm = term.replace("au+", "");
         _keyWords.push(searchTerm);
         filterData = filterData.filter((paper) =>
-          paper.authors
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()),
+          paper.authors.toLowerCase().includes(searchTerm.toLowerCase()),
         );
       } else if (term.toLowerCase().startsWith("au-")) {
         const searchTerm = term.replace("au-", "");
         filterData = filterData.filter(
           (paper) =>
-            !paper.authors
-              .toLowerCase()
-              .includes(searchTerm.toLowerCase()),
+            !paper.authors.toLowerCase().includes(searchTerm.toLowerCase()),
         );
       } else {
         _keyWords.push(term);
         filterData = filterData.filter(
           (paper) =>
             paper.title.toLowerCase().includes(term.toLowerCase()) ||
-            paper.authors
-              .toLowerCase()
-              .includes(term.toLowerCase()) ||
+            paper.authors.toLowerCase().includes(term.toLowerCase()) ||
             paper.abstract.toLowerCase().includes(term.toLowerCase()),
         );
       }
@@ -214,6 +179,40 @@ export default function Home() {
       }
     }
   }
+
+  useEffect(
+    () => {
+      // check the most common words in the search
+      const title_words = new Map<string, number>();
+      const _ignore_words = ignore_words.slice();
+      // add the search terms to the ignore words
+      _ignore_words.push(...keyWords.map((word) => word.toLowerCase()));
+
+      for (const paper of data) {
+        const title = paper.title.toLowerCase();
+        const words = title
+          .split(" ")
+          .filter((word) => !_ignore_words.includes(word))
+          .filter((word) => word.length > 1)
+        for (const word of words) {
+          if (title_words.has(word)) {
+            title_words.set(word, title_words.get(word)! + 1);
+          } else {
+            title_words.set(word, 1);
+          }
+        }
+      }
+
+      const sorted_title_words = new Map(
+        [...title_words.entries()].sort((a, b) => b[1] - a[1]),
+      );
+
+      const cut_terms = Array.from(sorted_title_words.entries()).slice(0, 10);
+      setCutTerms(cut_terms);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data],
+  );
 
   return (
     <>
@@ -247,16 +246,47 @@ export default function Home() {
 
         {/* make in input box */}
         {/* <div className="flex flex-row flex-wrap items-center justify-center gap-4 pt-4"> */}
-        <input
-          type="text"
-          id="search"
-          placeholder="Search"
-          className=" mx-10 w-3/4 max-w-96 rounded-md border-2 border-slate-300 px-4 py-2 focus:ring-sky-900"
-          value={search}
-          onChange={handleSearchChange}
-        />
+        <div className="w-screen flex-col items-center justify-center">
+          <div className="flex w-screen items-center justify-center">
+            <input
+              type="text"
+              id="search"
+              placeholder="Search"
+              className=" mx-5 w-3/4 max-w-96 rounded-md border-2 border-slate-300 px-4 py-2 focus:ring-sky-900"
+              value={search}
+              onChange={handleSearchChange}
+            />
+
+            {/* little circle button */}
+            <button
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200 px-4 py-2"
+              onClick={() => setScissorsPuss(!scissorsPuss)}
+            >
+              {scissorsPuss ? "🐱" : "🕊️"}
+            </button>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-4 pt-4 ">
+            {cutTerms.map(([term, count], index) => (
+              // <p key={index}>{`${term} : ${count}`}</p>
+              <div
+                key={index}
+                onClick={() => {
+                  const operation = scissorsPuss ? "t-" : "t+";
+                  setSearch(`${search} ${operation}${term.replace(/ /g, "_")}`);
+                }}
+                className={clsx(
+                  "gap- flex items-center justify-center rounded-full px-4 py-2",
+                  scissorsPuss ? "bg-sky-900 text-white" : "bg-slate-200",
+                )}
+              >
+                <p>{term}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* make a little comentary about where the papers came from */}
-        {/* <p className="flex w-full flex-row flex-wrap justify-center text-justify gap-2 text-slate-700"> */}
         {/* make a fixed footer */}
         {!isLegalSectionCollapsed && (
           <div className="fixed bottom-0 w-full bg-slate-200 p-4">
@@ -269,104 +299,14 @@ export default function Home() {
             >
               Close
             </button>
-
-            <div className="flex w-full flex-row flex-wrap justify-start gap-2 text-justify text-slate-700 ">
-              <p>These research papers are the</p>
-              <a
-                href="https://openaccess.thecvf.com/menu"
-                className="text-sky-900"
-              >
-                Open Access
-              </a>
-              <p>
-                {" "}
-                versions, provided by the {""}
-                <a className="text-sky-900" href="https://www.thecvf.com/">
-                  Computer Vision Foundation
-                </a>
-                .
-              </p>
-              <p>
-                Except for the watermark, they are identical to the accepted
-                versions; the final published version of the proceedings is
-                available on IEEE Xplore.This material is presented to ensure
-                timely dissemination of scholarly and technical work. Copyright
-                and all rights therein are retained by authors or by other
-                copyright holders. All persons copying this information are
-                expected to adhere to the terms and constraints invoked by each
-                authors copyright.
-              </p>
-            </div>
+            <LegalSection />
           </div>
         )}
 
         {/* Collapsible section */}
         <div className="flex flex-col items-start justify-center gap-4 pt-4">
-          {!isSectionCollapsed && (
-            <>
-              <p className="">
-                Search for papers by title, authors, or abstract
-              </p>
-              <p className="">
-                Use
-                <span className=" m-1 rounded border-[1px] border-solid border-slate-700 bg-slate-200 font-mono ">
-                  {" "}
-                  t+{" "}
-                </span>
-                to search for the title including the search term
-              </p>
-              <p className="">
-                Use
-                <span className=" m-1 rounded border-[1px] border-solid border-slate-700 bg-slate-200 font-mono ">
-                  {" "}
-                  t-{" "}
-                </span>
-                to search for the title excluding the search term
-              </p>
-              <p className="">
-                Use
-                <span className=" m-1 rounded border-[1px] border-solid border-slate-700 bg-slate-200 font-mono ">
-                  {" "}
-                  a+{" "}
-                </span>
-                to search for the abstract including the search term
-              </p>
-              <p className="">
-                Use
-                <span className=" m-1 rounded border-[1px] border-solid border-slate-700 bg-slate-200 font-mono ">
-                  {" "}
-                  a-{" "}
-                </span>
-                to search for the abstract excluding the search term
-              </p>
-              <p className="">
-                Use
-                <span className=" m-1 rounded border-[1px] border-solid border-slate-700 bg-slate-200 font-mono ">
-                  {" "}
-                  au+{" "}
-                </span>
-                to search for the authors including the search term
-              </p>
-              <p className="">
-                Use
-                <span className=" m-1 rounded border-[1px] border-solid border-slate-700 bg-slate-200 font-mono ">
-                  {" "}
-                  au-{" "}
-                </span>
-                to search for the authors excluding the search term
-              </p>
-              <p className="">Separate all terms by space</p>
-            </>
-          )}
+          {!isSectionCollapsed && <HelpSection />}
         </div>
-
-        {/* <button
-                  className="rounded-md bg-blue-500 px-4 py-2 text-white"
-                  onClick={() => setIsSectionCollapsed(!isSectionCollapsed)}
-                  >
-                  {isSectionCollapsed ? "Show Instructions" : "Hide Instructions"}
-                </button> */}
-        {/* </div> */}
 
         {/* make a nice list of papers */}
 
@@ -374,96 +314,9 @@ export default function Home() {
           {search.length > 0 && (
             <>
               <p className="pt-4 ">{`Found ${data.length} out of ${ogdata.length} papers`}</p>
-              {data.slice(0, 200).map((paper, index) => {
-                const authors = paper.authors;
-                const title = paper.title;
-                const abstract = paper.abstract;
-
-                return (
-                  <div
-                    key={index}
-                    className="flex flex-col items-center justify-center gap-4 rounded-2xl border-2 border-slate-300 p-10 "
-                  >
-                    <h1 className="text-justify text-3xl font-bold">
-                      {/* <Highlighter 
-                        highlightClassName="YourHighlightClass"
-                        searchWords={keyWords} 
-                        autoEscape={true} 
-                        textToHighlight={title}
-                      /> */}
-                      {title}
-                    </h1>
-
-                    <p className="">{authors}</p> 
-                    {/* <Highlighter 
-                      highlightClassName="YourHighlightClass"
-                      searchWords={keyWords} 
-                      autoEscape={true} 
-                      textToHighlight={authors}
-                    />  */}
-
-                    <p className=" text-justify ">{abstract}</p>
-
-                    {/* <Highlighter 
-                      highlightClassName="YourHighlightClass"
-                      searchWords={keyWords} 
-                      autoEscape={true} 
-                      textToHighlight={abstract}
-                    /> */}
-
-                    {/* show bibref as mono text */}
-                    <div className="flex flex-row gap-4">
-                      {paper.bibref && (
-                        <span className="rounded border-[1px] border-solid border-slate-700 bg-slate-200 p-1 text-justify font-mono text-xs ">
-                          {paper.bibref}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="flex flex-row gap-4">
-                      {paper.openaccess_url && (
-                        <Link href={paper.openaccess_url}>
-                          <button className="rounded-md bg-blue-100 px-4 py-2 text-black">
-                            Open Access
-                          </button>
-                        </Link>
-                      )}
-
-                      {paper.arXiv && (
-                        <Link href={paper.arXiv}>
-                          <button className="rounded-md bg-blue-100 px-4 py-2 text-black">
-                            arXiv
-                          </button>
-                        </Link>
-                      )}
-
-                      {paper.pdf && (
-                        <Link href={paper.pdf}>
-                          <button className="rounded-md bg-blue-100 px-4 py-2 text-black">
-                            PDF
-                          </button>
-                        </Link>
-                      )}
-                       {paper.supp && (
-                        <Link href={paper.supp}>
-                          <button className="rounded-md bg-blue-100 px-4 py-2 text-black">
-                            Supplementary
-                          </button>
-                        </Link>
-                      )}
-
-                      {paper.NeurIPS && (
-                        <Link href={paper.NeurIPS}>
-                          <button className="rounded-md bg-blue-100 px-4 py-2 text-black">
-                            NeurIPS
-                          </button>
-                        </Link>
-                      )}
-
-                    </div>
-                  </div>
-                );
-              })}
+              {data.slice(0, 200).map((paper, index) => (
+                <PaperView paper={paper} key={index} />
+              ))}
             </>
           )}
         </div>
