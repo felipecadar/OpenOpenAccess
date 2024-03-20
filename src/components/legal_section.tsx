@@ -2,14 +2,22 @@ export default function LegalSection() {
   return (
     <div className="flex w-full flex-row flex-wrap justify-start gap-2 text-justify text-slate-700 ">
       <p>These research papers are the</p>
-      <a href="https://openaccess.thecvf.com/menu" className="text-sky-900">
+      <a href="https://openaccess.thecvf.com/menu" className="text-sky-900 underline">
         Open Access
+      </a>
+      <p> and </p>
+      <a href="https://papers.nips.cc/" className="text-sky-900 underline">
+        NeurIPS
       </a>
       <p>
         {" "}
         versions, provided by the {""}
-        <a className="text-sky-900" href="https://www.thecvf.com/">
+        <a className="text-sky-900 underline" href="https://www.thecvf.com/">
           Computer Vision Foundation
+        </a>
+        {""} and{" "}
+        <a className="text-sky-900 underline" href="https://nips.cc/">
+         Conference on Neural Information Processing Systems
         </a>
         .
       </p>

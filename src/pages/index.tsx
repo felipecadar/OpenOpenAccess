@@ -351,6 +351,14 @@ export default function Home() {
         {/* Collapsible section */}
         {!isSectionCollapsed && (
           <div className="fixed bottom-0 w-full bg-slate-200 p-4">
+            <button
+              className="float-right rounded-full bg-slate-300 px-4 py-2"
+              onClick={() =>
+                setIsSectionCollapsed(!isSectionCollapsed)
+              }
+            >
+              Close
+            </button>
             <div className="flex flex-col items-start justify-center gap-4 pt-4">
               <HelpSection />
             </div>
