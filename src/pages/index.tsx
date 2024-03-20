@@ -30,7 +30,8 @@ export default function Home() {
   );
   // tuple of [term, count]
   const [cutTerms, setCutTerms] = useState<[string, number][]>([]);
-  const [scissorsPuss, setScissorsPuss] = useState(true);
+  const [scissorsPuss, setScissorsPuss] = useState(true); 
+  const [showKeyWords, setShowKeyWords] = useState(false);
 
   // focus on search input when page loads
   useEffect(() => {
@@ -195,7 +196,7 @@ export default function Home() {
         const words = title
           .split(" ")
           .filter((word) => !_ignore_words.includes(word))
-          .filter((word) => word.length > 1)
+          .filter((word) => word.length > 1);
         for (const word of words) {
           if (title_words.has(word)) {
             title_words.set(word, title_words.get(word)! + 1);
@@ -209,7 +210,7 @@ export default function Home() {
         [...title_words.entries()].sort((a, b) => b[1] - a[1]),
       );
 
-      const cut_terms = Array.from(sorted_title_words.entries()).slice(0, 10);
+      const cut_terms = Array.from(sorted_title_words.entries()).slice(0, 5);
       setCutTerms(cut_terms);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -250,6 +251,29 @@ export default function Home() {
         {/* <div className="flex flex-row flex-wrap items-center justify-center gap-4 pt-4"> */}
         <div className="w-screen flex-col items-center justify-center">
           <div className="flex w-screen items-center justify-center">
+            <button
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200"
+              onClick={() => setShowKeyWords(!showKeyWords)}
+            >
+              {!showKeyWords ?
+               <img src="/paperhound_choice.png" /> :
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="white"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+              }
+
+            </button>
             <input
               type="text"
               id="search"
@@ -260,38 +284,52 @@ export default function Home() {
             />
 
             {/* little circle button */}
-            <button
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200 px-4 py-2"
-              onClick={() => setScissorsPuss(!scissorsPuss)}
-            >
-              {scissorsPuss ? "🐱" : "🕊️"}
-            </button>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-4 ">
-            {cutTerms.map(([term, count], index) => (
-              // <p key={index}>{`${term} : ${count}`}</p>
-              <div
-                // show a help message when hovering over the term depending on the scissorsPuss
-                title={
-                  scissorsPuss
-                    ? `Remove ${term} to the search`
-                    : `Add ${term} from the search`
-                }
-                key={index}
-                onClick={() => {
-                  const operation = scissorsPuss ? "t-" : "t+";
-                  setSearch(`${search} ${operation}${term.replace(/ /g, "_")}`);
-                }}
-                className={clsx(
-                  "gap- flex items-center justify-center rounded-full px-4 py-2 cursor-pointer",
-                  scissorsPuss ? "bg-sky-900 text-white" : "bg-slate-200",
-                )}
+          {showKeyWords && (
+            // add a border
+            <div className="flex flex-wrap items-center justify-center m-4 ">
+              <div className="flex flex-wrap bg-slate-200 rounded-full gap-4 items-center justify-center pr-2">
+
+              <button className={clsx(
+                "rounded-full bg-slate-200 h-14 w-14"
+              )}
+                onClick={() => setScissorsPuss(!scissorsPuss)}
               >
-                <p>{term}</p>
-              </div>
-            ))}
-          </div>
+                {scissorsPuss ? 
+                <img src="/scissorpuss.png" className="" /> :
+                <img src="/rockraven.png" className="" />
+                }
+                  
+              </button>
+              {cutTerms.map(([term, count], index) => (
+                // <p key={index}>{`${term} : ${count}`}</p>
+                <div
+                  // show a help message when hovering over the term depending on the scissorsPuss
+                  title={
+                    scissorsPuss
+                      ? `Remove ${term} to the search`
+                      : `Add ${term} from the search`
+                  }
+                  key={index}
+                  onClick={() => {
+                    const operation = scissorsPuss ? "t-" : "t+";
+                    setSearch(
+                      `${search} ${operation}${term.replace(/ /g, "_")}`,
+                    );
+                  }}
+                  className={clsx(
+                    "gap- flex cursor-pointer items-center justify-center rounded-full px-4 py-2 h-10",
+                    scissorsPuss ? "bg-sky-900 text-slate-200" : "bg-white text-sky-900",
+                  )}
+                >
+                  <p>{term}</p>
+                </div>
+              ))}
+            </div>
+            </div>
+
+          )}
         </div>
 
         {/* make a little comentary about where the papers came from */}
