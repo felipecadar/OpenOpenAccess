@@ -308,8 +308,8 @@ export default function Home() {
                   // show a help message when hovering over the term depending on the scissorsPuss
                   title={
                     scissorsPuss
-                      ? `Remove ${term} to the search`
-                      : `Add ${term} from the search`
+                      ? `Remove ${term} from the search`
+                      : `Add ${term} to the search`
                   }
                   key={index}
                   onClick={() => {
