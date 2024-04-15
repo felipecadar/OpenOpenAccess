@@ -13,12 +13,16 @@ abstract_max_len = 10_000
 abtract_lens = []
 unique_papers = {}
 for paper in tqdm(DB):
-    title = paper['title']
+    title = paper['title'].strip().lower().replace(' ', '')
     # limt abstract length
     paper['abstract'] = paper['abstract'][:abstract_max_len]
     if title not in unique_papers:
         unique_papers[title] = paper
     else:
+        # show both duplicates
+        print(f"Duplicate: {title}")
+        print(f"Paper 1: {unique_papers[title]['title']}")
+        print(f"Paper 2: {paper['title']}")
         # check if has more keys
         if len(paper.keys()) > len(unique_papers[title].keys()):
             unique_papers[title] = paper
