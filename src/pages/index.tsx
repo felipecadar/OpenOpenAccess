@@ -89,6 +89,17 @@ export default function Home() {
     window.history.pushState({}, "", `/?search=${encoded_query}`);
   }, [search]);
 
+  function compare(query: string, text: string) {
+    // compare the query to the text
+    // if the query is enveloped by "" or '', then it should be an exact match
+    // otherwise, it should be a partial match
+    if ((query.startsWith('"') && query.endsWith('"') || (query.startsWith("'") && query.endsWith("'")))) {
+      return text.includes(query.slice(1, -1));
+    }else{
+      return text.trim().toLowerCase().includes(query.trim().toLowerCase());
+    }
+  }
+
   function searchFilter() {
     // t+ to search for the title including the search term
     // t- to search for the title excluding the search term
@@ -107,11 +118,10 @@ export default function Home() {
     let filterData = ogdata;
     const _keyWords = [] as string[];
 
-    const searchTerms = search
-      .trim()
-      .split(" ")
-      .filter((term) => term.length > 0);
-    searchTerms.forEach((term) => {
+    // split the search terms by space, but keep the quoted terms together
+    const searchTermsSplit = (search.match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g) ?? []).filter((term) => term.length > 0)
+
+    searchTermsSplit.forEach((term) => {
       // if starts with t, a, au followed by + or -, make sure there is a term after it
       if (
         valid_inits.includes(term.toLowerCase().slice(0, 2)) &&
@@ -125,45 +135,45 @@ export default function Home() {
         const searchTerm = term.replace("t+", "");
         _keyWords.push(searchTerm);
         filterData = filterData.filter((paper) =>
-          paper.title.toLowerCase().includes(searchTerm.toLowerCase()),
+          compare(searchTerm, paper.title)
         );
       } else if (term.toLowerCase().startsWith("t-")) {
         const searchTerm = term.replace("t-", "");
         filterData = filterData.filter(
           (paper) =>
-            !paper.title.toLowerCase().includes(searchTerm.toLowerCase()),
+            !compare(searchTerm, paper.title)
         );
       } else if (term.toLowerCase().startsWith("a+")) {
         const searchTerm = term.replace("a+", "");
         _keyWords.push(searchTerm);
         filterData = filterData.filter((paper) =>
-          paper.abstract.toLowerCase().includes(searchTerm.toLowerCase()),
+          compare(searchTerm, paper.abstract)
         );
       } else if (term.toLowerCase().startsWith("a-")) {
         const searchTerm = term.replace("a-", "");
         filterData = filterData.filter(
           (paper) =>
-            !paper.abstract.toLowerCase().includes(searchTerm.toLowerCase()),
+            !compare(searchTerm, paper.abstract)
         );
       } else if (term.toLowerCase().startsWith("au+")) {
         const searchTerm = term.replace("au+", "");
         _keyWords.push(searchTerm);
         filterData = filterData.filter((paper) =>
-          paper.authors.toLowerCase().includes(searchTerm.toLowerCase()),
+          compare(searchTerm, paper.authors)
         );
       } else if (term.toLowerCase().startsWith("au-")) {
         const searchTerm = term.replace("au-", "");
         filterData = filterData.filter(
           (paper) =>
-            !paper.authors.toLowerCase().includes(searchTerm.toLowerCase()),
+            !compare(searchTerm, paper.authors)
         );
       } else {
         _keyWords.push(term);
         filterData = filterData.filter(
           (paper) =>
-            paper.title.toLowerCase().includes(term.toLowerCase()) ||
-            paper.authors.toLowerCase().includes(term.toLowerCase()) ||
-            paper.abstract.toLowerCase().includes(term.toLowerCase()),
+            compare(term, paper.title) ||
+            compare(term, paper.authors) ||
+            compare(term, paper.abstract)
         );
       }
     });
@@ -172,7 +182,7 @@ export default function Home() {
     setData(filterData);
     setDogFigure(all_dogs.regular);
 
-    if (searchTerms.length > 0) {
+    if (searchTermsSplit.length > 0) {
       if (filterData.length == 1) {
         setDogFigure(all_dogs.happy);
       } else if (filterData.length == 0) {

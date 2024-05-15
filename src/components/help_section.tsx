@@ -53,7 +53,17 @@ export default function HelpSection() {
           </span>
           to search for the authors excluding the search term
         </p>
-        <p className="">Separate all terms by space</p>
+        <p className="">Separate all terms by space and use quotes to key terms together :) </p>
+        <p> Example: 
+          <span className=" m-2 rounded border-[1px] border-solid border-slate-700 bg-slate-200 font-mono ">
+            {" "}
+            t+&quot;Weighted Sparse&quot;
+            {" "}
+          </span>
+          
+
+        </p>
+
       </>
     );
 }
