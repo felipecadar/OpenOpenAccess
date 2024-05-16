@@ -94,7 +94,7 @@ export default function Home() {
     // if the query is enveloped by "" or '', then it should be an exact match
     // otherwise, it should be a partial match
     if ((query.startsWith('"') && query.endsWith('"') || (query.startsWith("'") && query.endsWith("'")))) {
-      return text.includes(query.slice(1, -1));
+      return text.toLowerCase().includes(query.toLowerCase().slice(1, -1));
     }else{
       return text.trim().toLowerCase().includes(query.trim().toLowerCase());
     }
