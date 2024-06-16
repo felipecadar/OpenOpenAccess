@@ -131,7 +131,7 @@ if __name__ == "__main__":
     BASE_URL_MENU = "https://openaccess.thecvf.com/menu"
     BASE_URL = "https://openaccess.thecvf.com"
     
-    if os.path.exists("papers_links.json"):
+    if os.path.exists("papers_links.json") and False:
         with open("papers_links.json", "r") as f:
             all_paper_pages = json.load(f)
         print(f"Found {len(all_paper_pages)} papers")
