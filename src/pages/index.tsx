@@ -112,7 +112,7 @@ export default function Home() {
 
     // separate all terms by space
 
-    const valid_inits = ["t+", "t-", "a+", "a-", "au+", "au-"];
+    const valid_inits = ["t+", "t-", "a+", "a-", "au+", "au-", "c+", "c-"];
 
     // reset data to original data
     let filterData = ogdata;
@@ -166,6 +166,21 @@ export default function Home() {
         filterData = filterData.filter(
           (paper) =>
             !compare(searchTerm, paper.authors)
+        );
+      } else if (term.toLowerCase().startsWith("c+")) {
+        // check for conference name in the pdf link
+        const searchTerm = term.replace("c+", "");
+        _keyWords.push(searchTerm);
+        filterData = filterData.filter((paper) =>
+          paper.pdf ? compare(searchTerm, paper.pdf) : false
+        );
+      }
+      else if (term.toLowerCase().startsWith("c-")) {
+        // check for conference name in the pdf link
+        const searchTerm = term.replace("c-", "");
+        filterData = filterData.filter(
+          (paper) =>
+            paper.pdf ? !compare(searchTerm, paper.pdf) : true
         );
       } else {
         _keyWords.push(term);
